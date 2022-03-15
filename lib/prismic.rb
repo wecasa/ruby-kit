@@ -324,12 +324,11 @@ module Prismic
             end
             response.body
           else
-            body = JSON.load(response.body) rescue nil
-            error = body.is_a?(Hash) ? body['error'] : response.body
-            raise AuthenticationException, error if response.code.to_s == '401'
-            raise AuthorizationException, error if response.code.to_s == '403'
-            raise RefNotFoundException, error if response.code.to_s == '404'
-            raise FormSearchException, error
+            body = JSON.load(response.body) rescue response.body
+            raise AuthenticationException, body if response.code.to_s == '401'
+            raise AuthorizationException, body if response.code.to_s == '403'
+            raise RefNotFoundException, body if response.code.to_s == '404'
+            raise FormSearchException, body
           end
         else
           raise UnsupportedFormKind, "Unsupported kind of form: #{form_method} / #{enctype}"
